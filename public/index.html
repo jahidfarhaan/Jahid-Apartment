@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jahid Apartment Maintenance Management</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#1e1b4b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbars for high-density tables */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        .pulse-subtle {
+            animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-subtle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+    </style>
+</head>
+<body class="bg-[#090D16] text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-indigo-500 selection:text-white">
+
+    <!-- TOP OPERATIONAL BAR / BRAND HEADER -->
+    <header class="bg-slate-900/95 border-b border-slate-800 sticky top-0 z-40 backdrop-blur-md shadow-lg shadow-black/30">
+        <div class="max-w-[1920px] mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4">
+            
+            <!-- Left: Bold System Title & Status Engine -->
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-lg bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 text-white font-bold text-lg ring-1 ring-white/20">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-xl sm:text-2xl font-black tracking-tight text-white uppercase bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-indigo-200">
+                            Jahid Apartment Maintenance Management
+                        </h1>
+                        <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                            v1.0 Pro
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-400 font-medium flex items-center gap-2 mt-0.5">
+                        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 pulse-subtle"></span>
+                        <span>Operational Workspace Engine</span>
+                        <span class="text-slate-600">•</span>
+                        <span id="dbModeBadge" class="text-slate-400">Database: Active</span>
+                        <span class="text-slate-600">•</span>
+                        <span id="liveClock" class="font-mono text-slate-300">--:--:--</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Center: Workspace View Selector Tabs -->
+            <div class="flex items-center bg-slate-950/80 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
+                <button onclick="switchView('split')" id="btnViewSplit" class="view-btn px-3 py-1.5 rounded-lg transition-all text-white bg-indigo-600 shadow-sm flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                    <span>Quad View</span>
+                </button>
+                <button onclick="switchView('residents')" id="btnViewResidents" class="view-btn px-3 py-1.5 rounded-lg transition-all text-slate-400 hover:text-slate-200 flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                    <span>Residents</span>
+                </button>
+                <button onclick="switchView('staff')" id="btnViewStaff" class="view-btn px-3 py-1.5 rounded-lg transition-all text-slate-400 hover:text-slate-200 flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                    <span>Staff</span>
+                </button>
+                <button onclick="switchView('requests')" id="btnViewRequests" class="view-btn px-3 py-1.5 rounded-lg transition-all text-slate-400 hover:text-slate-200 flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                    <span>Requests</span>
+                </button>
+                <button onclick="switchView('records')" id="btnViewRecords" class="view-btn px-3 py-1.5 rounded-lg transition-all text-slate-400 hover:text-slate-200 flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <span>Repair Records</span>
+                </button>
+            </div>
+
+            <!-- Right: Refresh & Global Search -->
+            <div class="flex items-center gap-3">
+                <div class="relative hidden sm:block">
+                    <input type="text" id="globalSearch" oninput="applyGlobalSearch()" placeholder="Search records, flats, staff..." class="bg-slate-950 border border-slate-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 w-44 lg:w-60 transition-all">
+                    <svg class="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                </div>
+                <button onclick="fetchAllData(true)" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 text-xs font-semibold rounded-lg border border-slate-700 flex items-center gap-1.5 transition-all shadow-sm">
+                    <svg id="refreshIcon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                    <span>Sync</span>
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- EXECUTIVE KPI STATS RIBBON -->
+    <section class="max-w-[1920px] mx-auto w-full px-4 sm:px-6 pt-5 pb-2">
+        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
+            
+            <!-- Metric 1: Total Residents -->
+            <div class="bg-slate-900/80 border border-slate-800/80 rounded-xl p-3.5 flex items-center justify-between shadow-sm hover:border-slate-700 transition-colors">
+                <div>
+                    <span class="text-xs uppercase tracking-wider font-semibold text-slate-400">Total Residents</span>
+                    <div class="text-2xl font-black text-white mt-0.5" id="metricResidents">0</div>
+                    <span class="text-[11px] text-slate-500">Across Towers A, B & C</span>
+                </div>
+                <div class="h-10 w-10 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                </div>
+            </div>
+
+            <!-- Metric 2: Maintainance Staff -->
+            <div class="bg-slate-900/80 border border-slate-800/80 rounded-xl p-3.5 flex items-center justify-between shadow-sm hover:border-slate-700 transition-colors">
+                <div>
+                    <span class="text-xs uppercase tracking-wider font-semibold text-slate-400">Active Staff</span>
+                    <div class="text-2xl font-black text-white mt-0.5" id="metricStaff">0</div>
+                    <span class="text-[11px] text-slate-500">On-Duty Technicians</span>
+                </div>
+                <div class="h-10 w-10 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                </div>
+            </div>
+
+            <!-- Metric 3: Open Requests -->
+            <div class="bg-slate-900/80 border border-slate-800/80 rounded-xl p-3.5 flex items-center justify-between shadow-sm hover:border-slate-700 transition-colors">
+                <div>
+                    <span class="text-xs uppercase tracking-wider font-semibold text-slate-400">Open Requests</span>
+                    <div class="text-2xl font-black text-amber-400 mt-0.5" id="metricOpenRequests">0</div>
+                    <span class="text-[11px] text-slate-500">Pending &amp; In-Progress</span>
+                </div>
+                <div class="h-10 w-10 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </div>
+            </div>
+
+            <!-- Metric 4: Completed Records -->
+            <div class="bg-slate-900/80 border border-slate-800/80 rounded-xl p-3.5 flex items-center justify-between shadow-sm hover:border-slate-700 transition-colors">
+                <div>
+                    <span class="text-xs uppercase tracking-wider font-semibold text-slate-400">Repairs Resolved</span>
+                    <div class="text-2xl font-black text-emerald-400 mt-0.5" id="metricCompleted">0</div>
+                    <span class="text-[11px] text-slate-500">Verified Work Orders</span>
+                </div>
+                <div class="h-10 w-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </div>
+            </div>
+
+            <!-- Metric 5: Total Repair Cost -->
+            <div class="col-span-2 md:col-span-1 bg-slate-900/80 border border-slate-800/80 rounded-xl p-3.5 flex items-center justify-between shadow-sm hover:border-slate-700 transition-colors">
+                <div>
+                    <span class="text-xs uppercase tracking-wider font-semibold text-slate-400">Total Repair Cost</span>
+                    <div class="text-2xl font-black text-emerald-400 font-mono mt-0.5" id="metricTotalCost">$0.00</div>
+                    <span class="text-[11px] text-slate-500">Cumulative Expense</span>
+                </div>
+                <div class="h-10 w-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- MAIN OPERATIONAL WORKSPACE GRID (QUAD / SINGLE-TAB CONTAINER) -->
+    <main class="flex-1 max-w-[1920px] mx-auto w-full p-4 sm:p-6">
+        
+        <div id="workspaceGrid" class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+
+            <!-- ============================================================== -->
+            <!-- SECTION 1: RESIDENTS REGISTRY -->
+            <!-- ============================================================== -->
+            <section id="sectionResidents" class="bg-slate-900/90 border border-slate-800 rounded-2xl flex flex-col shadow-xl overflow-hidden">
+                <!-- Panel Header -->
+                <div class="px-5 py-3.5 border-b border-slate-800 flex items-center justify-between bg-slate-950/50">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
+                        <h2 class="font-bold text-sm tracking-wide text-white uppercase flex items-center gap-2">
+                            <span>Residents Registry</span>
+                            <span id="badgeCountResidents" class="bg-blue-500/20 text-blue-300 text-xs px-2 py-0.5 rounded-full border border-blue-500/30">0</span>
+                        </h2>
+                    </div>
+                    <button onclick="toggleForm('formContainerResident')" class="text-xs px-2.5 py-1 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/40 rounded-lg flex items-center gap-1 transition-all">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                        <span>Register Resident</span>
+                    </button>
+                </div>
+
+                <!-- Input Panel: Register Resident Form -->
+                <div id="formContainerResident" class="p-4 bg-slate-950/80 border-b border-slate-800">
+                    <h3 class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
+                        <span>New Resident Enrollment</span>
+                    </h3>
+                    <form id="formAddResident" onsubmit="handleCreateResident(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-medium">Resident Name *</label>
+                            <input type="text" id="res_name" required placeholder="e.g. John Doe" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-medium">Flat No *</label>
+                            <input type="text" id="res_flat_no" required placeholder="e.g. Tower A - 302" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-medium">Phone Number *</label>
+                            <input type="tel" id="res_phone" required placeholder="e.g. 9876543210" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-medium">Email Address *</label>
+                            <input type="email" id="res_email" required placeholder="e.g. resident@email.com" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-blue-500">
+                        </div>
+                        <div class="sm:col-span-2 md:col-span-4 flex justify-end gap-2 mt-1">
+                            <button type="reset" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold">Clear</button>
+                            <button type="submit" class="px-4 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold shadow-md shadow-blue-600/30 flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                                <span>Save Resident</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Table Grid: Residents -->
+                <div class="overflow-x-auto flex-1 max-h-[380px] overflow-y-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead class="sticky top-0 bg-slate-950/95 border-b border-slate-800 text-slate-400 uppercase text-[11px] font-semibold tracking-wider">
+                            <tr>
+                                <th class="py-2.5 px-3">ID</th>
+                                <th class="py-2.5 px-3">Resident</th>
+                                <th class="py-2.5 px-3">Flat No</th>
+                                <th class="py-2.5 px-3">Phone</th>
+                                <th class="py-2.5 px-3">Email</th>
+                                <th class="py-2.5 px-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyResidents" class="divide-y divide-slate-800/60 font-normal text-slate-300">
+                            <tr><td colspan="6" class="text-center py-6 text-slate-500">Loading residents registry...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ============================================================== -->
+            <!-- SECTION 2: STAFF DIRECTORY -->
+            <!-- ============================================================== -->
+            <section id="sectionStaff" class="bg-slate-900/90 border border-slate-800 rounded-2xl flex flex-col shadow-xl overflow-hidden">
+                <!-- Panel Header -->
+                <div class="px-5 py-3.5 border-b border-slate-800 flex items-center justify-between bg-slate-950/50">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-indigo-500"></div>
+                        <h2 class="font-bold text-sm tracking-wide text-white uppercase flex items-center gap-2">
+                            <span>Maintainance Staff Directory</span>
+                            <span id="badgeCountStaff" class="bg-indigo-500/20 text-indigo-300 text-xs px-2 py-0.5 rounded-full border border-indigo-500/30">0</span>
+                        </h2>
+                    </div>
+                    <button onclick="toggleForm('formContainerStaff')" class="text-xs px-2.5 py-1 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/40 rounded-lg flex items-center gap-1 transition-all">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                        <span>Onboard Staff</span>
+                    </button>
+                </div>
+
+                <!-- Input Panel: Onboard Staff Form -->
+                <div id="formContainerStaff" class="p-4 bg-slate-950/80 border-b border-slate-800">
+                    <h3 class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                        <span>Technician Onboarding</span>
+                    </h3>
+                    <form id="formAddStaff" onsubmit="handleCreateStaff(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-medium">Staff Name *</label>
+                            <input type="text" id="staff_name" required placeholder="e.g. Marcus Vance" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-medium">Specialization *</label>
+                            <select id="staff_specialization" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                                <option value="Plumbing">Plumbing</option>
+                                <option value="Electrical">Electrical</option>
+                                <option value="Cleaning">Cleaning</option>
+                                <option value="HVAC">HVAC</option>
+                                <option value="Carpentry">Carpentry</option>
+                                <option value="General Maintenance">General Maintenance</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-medium">Phone Number *</label>
+                            <input type="tel" id="staff_phone" required placeholder="e.g. 9123456780" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-medium">Email Address *</label>
+                            <input type="email" id="staff_email" required placeholder="e.g. staff@maintenance.pro" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <div class="sm:col-span-2 md:col-span-4 flex justify-end gap-2 mt-1">
+                            <button type="reset" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold">Clear</button>
+                            <button type="submit" class="px-4 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold shadow-md shadow-indigo-600/30 flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                                <span>Onboard Staff</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Table Grid: Staff -->
+                <div class="overflow-x-auto flex-1 max-h-[380px] overflow-y-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead class="sticky top-0 bg-slate-950/95 border-b border-slate-800 text-slate-400 uppercase text-[11px] font-semibold tracking-wider">
+                            <tr>
+                                <th class="py-2.5 px-3">ID</th>
+                                <th class="py-2.5 px-3">Technician</th>
+                                <th class="py-2.5 px-3">Specialization</th>
+                                <th class="py-2.5 px-3">Phone</th>
+                                <th class="py-2.5 px-3">Email</th>
+                                <th class="py-2.5 px-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyStaff" class="divide-y divide-slate-800/60 font-normal text-slate-300">
+                            <tr><td colspan="6" class="text-center py-6 text-slate-500">Loading staff directory...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ============================================================== -->
+            <!-- SECTION 3: OPEN MAINTENANCE REQUESTS -->
+            <!-- ============================================================== -->
+            <section id="sectionRequests" class="bg-slate-900/90 border border-slate-800 rounded-2xl flex flex-col shadow-xl overflow-hidden">
+                <!-- Panel Header -->
+                <div class="px-5 py-3.5 border-b border-slate-800 flex items-center justify-between bg-slate-950/50">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
+                        <h2 class="font-bold text-sm tracking-wide text-white uppercase flex items-center gap-2">
+                            <span>Open Maintenance Requests</span>
+                            <span id="badgeCountRequests" class="bg-amber-500/20 text-amber-300 text-xs px-2 py-0.5 rounded-full border border-amber-500/30">0</span>
+                        </h2>
+                    </div>
+                    <button onclick="toggleForm('formContainerRequest')" class="text-xs px-2.5 py-1 bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/40 rounded-lg flex items-center gap-1 transition-all">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                        <span>File Request</span>
+                    </button>
+                </div>
+
+                <!-- Input Panel: File Maintenance Request Form -->
+                <div id="formContainerRequest" class="p-4 bg-slate-950/80 border-b border-slate-800">
+                    <h3 class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                        <span>File Work Order Request</span>
+                    </h3>
+                    <form id="formAddRequest" onsubmit="handleCreateRequest(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-medium">Resident (Foreign Key) *</label>
+                            <select id="req_resident_id" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-amber-500">
+                                <option value="">Select Resident...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-medium">Assign Staff (Foreign Key)</label>
+                            <select id="req_staff_id" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-amber-500">
+                                <option value="">Unassigned (Pending Review)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-medium">Issue Type (Restricted) *</label>
+                            <select id="req_issue_type" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-amber-500">
+                                <option value="Plumbing">Plumbing</option>
+                                <option value="Electrical">Electrical</option>
+                                <option value="Cleaning">Cleaning</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-medium">Request Date &amp; Time *</label>
+                            <input type="datetime-local" id="req_request_date" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-medium">Initial Status *</label>
+                            <select id="req_status" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-amber-500">
+                                <option value="Pending" selected>Pending</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                        </div>
+                        <div class="sm:col-span-2 md:col-span-3">
+                            <label class="block text-slate-400 mb-1 font-medium">Issue Description *</label>
+                            <textarea id="req_description" required rows="2" placeholder="Provide precise description of maintenance issue..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-amber-500"></textarea>
+                        </div>
+                        <div class="sm:col-span-2 md:col-span-3 flex justify-end gap-2">
+                            <button type="reset" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold">Clear</button>
+                            <button type="submit" class="px-4 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-semibold shadow-md shadow-amber-600/30 flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                                <span>File Request</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Table Grid: Requests -->
+                <div class="overflow-x-auto flex-1 max-h-[380px] overflow-y-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead class="sticky top-0 bg-slate-950/95 border-b border-slate-800 text-slate-400 uppercase text-[11px] font-semibold tracking-wider">
+                            <tr>
+                                <th class="py-2.5 px-3">Req #</th>
+                                <th class="py-2.5 px-3">Resident &amp; Flat</th>
+                                <th class="py-2.5 px-3">Assigned Staff</th>
+                                <th class="py-2.5 px-3">Issue Type</th>
+                                <th class="py-2.5 px-3">Description</th>
+                                <th class="py-2.5 px-3">Date</th>
+                                <th class="py-2.5 px-3">Status</th>
+                                <th class="py-2.5 px-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyRequests" class="divide-y divide-slate-800/60 font-normal text-slate-300">
+                            <tr><td colspan="8" class="text-center py-6 text-slate-500">Loading maintenance requests...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ============================================================== -->
+            <!-- SECTION 4: COMPLETED REPAIR RECORDS -->
+            <!-- ============================================================== -->
+            <section id="sectionRecords" class="bg-slate-900/90 border border-slate-800 rounded-2xl flex flex-col shadow-xl overflow-hidden">
+                <!-- Panel Header -->
+                <div class="px-5 py-3.5 border-b border-slate-800 flex items-center justify-between bg-slate-950/50">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
+                        <h2 class="font-bold text-sm tracking-wide text-white uppercase flex items-center gap-2">
+                            <span>Completed Repair Records</span>
+                            <span id="badgeCountRecords" class="bg-emerald-500/20 text-emerald-300 text-xs px-2 py-0.5 rounded-full border border-emerald-500/30">0</span>
+                        </h2>
+                    </div>
+                    <button onclick="toggleForm('formContainerRecord')" class="text-xs px-2.5 py-1 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 rounded-lg flex items-center gap-1 transition-all">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                        <span>Log Repair Record</span>
+                    </button>
+                </div>
+
+                <!-- Input Panel: Log Completed Repair Record Form -->
+                <div id="formContainerRecord" class="p-4 bg-slate-950/80 border-b border-slate-800">
+                    <h3 class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
+                        <span>Log Resolution &amp; Incurred Costs</span>
+                    </h3>
+                    <form id="formAddRecord" onsubmit="handleCreateRecord(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-medium">Linked Request (Foreign Key) *</label>
+                            <select id="rec_request_id" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-emerald-500">
+                                <option value="">Select Request...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-medium">Completion Date *</label>
+                            <input type="date" id="rec_completion_date" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-medium">Repair Cost ($) *</label>
+                            <input type="number" step="0.01" min="0" id="rec_repair_cost" required placeholder="0.00" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-emerald-500 font-mono">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-slate-400 mb-1 font-medium">Work Description *</label>
+                            <textarea id="rec_work_description" required rows="2" placeholder="Summary of technical labor and components replaced..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-emerald-500"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1 font-medium">Remarks / Warranty</label>
+                            <textarea id="rec_remarks" rows="2" placeholder="e.g. 6-month warranty on seal..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-emerald-500"></textarea>
+                        </div>
+                        <div class="sm:col-span-2 md:col-span-3 flex justify-end gap-2">
+                            <button type="reset" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold">Clear</button>
+                            <button type="submit" class="px-4 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold shadow-md shadow-emerald-600/30 flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                                <span>Save Record</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Table Grid: Records -->
+                <div class="overflow-x-auto flex-1 max-h-[380px] overflow-y-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead class="sticky top-0 bg-slate-950/95 border-b border-slate-800 text-slate-400 uppercase text-[11px] font-semibold tracking-wider">
+                            <tr>
+                                <th class="py-2.5 px-3">Rec #</th>
+                                <th class="py-2.5 px-3">Linked Req</th>
+                                <th class="py-2.5 px-3">Work Description</th>
+                                <th class="py-2.5 px-3">Completed On</th>
+                                <th class="py-2.5 px-3">Cost ($)</th>
+                                <th class="py-2.5 px-3">Remarks</th>
+                                <th class="py-2.5 px-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyRecords" class="divide-y divide-slate-800/60 font-normal text-slate-300">
+                            <tr><td colspan="7" class="text-center py-6 text-slate-500">Loading repair records...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER OPERATIONAL STATUS STRIP -->
+    <footer class="bg-slate-950 border-t border-slate-800/80 py-2.5 px-6 text-xs text-slate-500 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-4">
+            <span class="font-semibold text-slate-400">Jahid Apartment Maintenance Management Workspace</span>
+            <span class="text-slate-700">|</span>
+            <span>REST API Engine: Express &amp; MySQL8</span>
+            <span class="text-slate-700">|</span>
+            <span class="text-emerald-400 font-medium">Autonomous Operations Ready</span>
+        </div>
+        <div class="flex items-center gap-3">
+            <span id="systemSyncTime" class="font-mono text-slate-400">Last Synced: Just now</span>
+        </div>
+    </footer>
+
+    <!-- ============================================================== -->
+    <!-- EDIT MODAL (REUSABLE PUT DIALOG) -->
+    <!-- ============================================================== -->
+    <div id="editModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+            <div class="px-5 py-3.5 border-b border-slate-800 flex items-center justify-between bg-slate-950">
+                <h3 id="editModalTitle" class="font-bold text-sm text-white flex items-center gap-2">
+                    <span>Edit Entry</span>
+                </h3>
+                <button onclick="closeEditModal()" class="text-slate-400 hover:text-white p-1 rounded-lg">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            <form id="editModalForm" onsubmit="handleEditSubmit(event)" class="p-5 space-y-3.5 text-xs">
+                <div id="editModalFields" class="space-y-3">
+                    <!-- Injected dynamically -->
+                </div>
+                <div class="pt-3 border-t border-slate-800 flex justify-end gap-2">
+                    <button type="button" onclick="closeEditModal()" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold">Cancel</button>
+                    <button type="submit" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold shadow-md shadow-indigo-600/30 flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                        <span>Update Database (PUT)</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION POPUP -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <div id="toastContent" class="px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 border text-xs font-semibold">
+            <!-- Icon and message dynamically set -->
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- CLIENT JAVASCRIPT: ASYNCHRONOUS JSON DATA PIPELINE -->
+    <!-- ============================================================== -->
+    <script>
+        // State Store
+        let state = {
+            residents: [],
+            staff: [],
+            requests: [],
+            records: [],
+            stats: {}
+        };
+
+        let currentEditingEntity = null;
+        let currentEditingId = null;
+
+        // Initialize Workspace on Page Load
+        document.addEventListener('DOMContentLoaded', () => {
+            initDefaults();
+            fetchAllData();
+            startLiveClock();
+        });
+
+        function initDefaults() {
+            // Set default date times
+            const now = new Date();
+            const localIso = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+            const reqDateInput = document.getElementById('req_request_date');
+            if (reqDateInput) reqDateInput.value = localIso;
+
+            const recDateInput = document.getElementById('rec_completion_date');
+            if (recDateInput) recDateInput.value = now.toISOString().slice(0, 10);
+        }
+
+        function startLiveClock() {
+            setInterval(() => {
+                const now = new Date();
+                const clockEl = document.getElementById('liveClock');
+                if (clockEl) {
+                    clockEl.textContent = now.toLocaleTimeString();
+                }
+            }, 1000);
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastContent = document.getElementById('toastContent');
+            if (!toast || !toastContent) return;
+
+            if (type === 'success') {
+                toastContent.className = 'px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 border text-xs font-semibold bg-emerald-950/90 text-emerald-200 border-emerald-500/40';
+                toastContent.innerHTML = `
+                    <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                    <span>${message}</span>
+                `;
+            } else {
+                toastContent.className = 'px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 border text-xs font-semibold bg-rose-950/90 text-rose-200 border-rose-500/40';
+                toastContent.innerHTML = `
+                    <svg class="w-4 h-4 text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    <span>${message}</span>
+                `;
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 3500);
+        }
+
+        // ==============================================================
+        // MASTER ASYNC FETCH PIPELINE
+        // ==============================================================
+        async function fetchAllData(showFeedback = false) {
+            const refreshIcon = document.getElementById('refreshIcon');
+            if (refreshIcon) refreshIcon.classList.add('animate-spin');
+
+            try {
+                const [resRes, staffRes, reqRes, recRes, statsRes] = await Promise.all([
+                    fetch('/residents').then(r => r.json()),
+                    fetch('/staff').then(r => r.json()),
+                    fetch('/requests').then(r => r.json()),
+                    fetch('/records').then(r => r.json()),
+                    fetch('/stats').then(r => r.json())
+                ]);
+
+                state.residents = Array.isArray(resRes) ? resRes : [];
+                state.staff = Array.isArray(staffRes) ? staffRes : [];
+                state.requests = Array.isArray(reqRes) ? reqRes : [];
+                state.records = Array.isArray(recRes) ? recRes : [];
+                state.stats = statsRes || {};
+
+                renderAll();
+                populateDropdowns();
+
+                const dbBadge = document.getElementById('dbModeBadge');
+                if (dbBadge && state.stats.dbMode) {
+                    dbBadge.textContent = state.stats.dbMode;
+                }
+
+                const syncTime = document.getElementById('systemSyncTime');
+                if (syncTime) syncTime.textContent = 'Last Synced: ' + new Date().toLocaleTimeString();
+
+                if (showFeedback) showToast('Workspace synchronized with database.');
+            } catch (err) {
+                console.error('Data Fetch Error:', err);
+                showToast('Database synchronization error: ' + err.message, 'error');
+            } finally {
+                if (refreshIcon) setTimeout(() => refreshIcon.classList.remove('animate-spin'), 400);
+            }
+        }
+
+        // Render all UI components
+        function renderAll() {
+            renderMetrics();
+            renderResidentsTable(state.residents);
+            renderStaffTable(state.staff);
+            renderRequestsTable(state.requests);
+            renderRecordsTable(state.records);
+        }
+
+        // Render Metrics Counters
+        function renderMetrics() {
+            document.getElementById('metricResidents').textContent = state.residents.length;
+            document.getElementById('metricStaff').textContent = state.staff.length;
+            
+            const openCount = state.requests.filter(r => r.status !== 'Completed').length;
+            document.getElementById('metricOpenRequests').textContent = openCount;
+
+            const completedCount = state.requests.filter(r => r.status === 'Completed').length;
+            document.getElementById('metricCompleted').textContent = completedCount;
+
+            const totalCost = state.records.reduce((acc, r) => acc + (parseFloat(r.repair_cost) || 0), 0);
+            document.getElementById('metricTotalCost').textContent = '$' + totalCost.toFixed(2);
+
+            document.getElementById('badgeCountResidents').textContent = state.residents.length;
+            document.getElementById('badgeCountStaff').textContent = state.staff.length;
+            document.getElementById('badgeCountRequests').textContent = state.requests.length;
+            document.getElementById('badgeCountRecords').textContent = state.records.length;
+        }
+
+        // Populate Foreign Key Dropdowns
+        function populateDropdowns() {
+            // Populate Residents in Request form
+            const reqResidentSelect = document.getElementById('req_resident_id');
+            if (reqResidentSelect) {
+                const currentVal = reqResidentSelect.value;
+                reqResidentSelect.innerHTML = '<option value="">Select Resident...</option>' +
+                    state.residents.map(r => `<option value="${r.resident_id}">[ID #${r.resident_id}] ${escapeHtml(r.name)} (${escapeHtml(r.flat_no)})</option>`).join('');
+                if (currentVal) reqResidentSelect.value = currentVal;
+            }
+
+            // Populate Staff in Request form
+            const reqStaffSelect = document.getElementById('req_staff_id');
+            if (reqStaffSelect) {
+                const currentVal = reqStaffSelect.value;
+                reqStaffSelect.innerHTML = '<option value="">Unassigned (Pending Review)</option>' +
+                    state.staff.map(s => `<option value="${s.staff_id}">[ID #${s.staff_id}] ${escapeHtml(s.name)} - ${escapeHtml(s.specialization)}</option>`).join('');
+                if (currentVal) reqStaffSelect.value = currentVal;
+            }
+
+            // Populate Requests in Records form
+            const recRequestSelect = document.getElementById('rec_request_id');
+            if (recRequestSelect) {
+                const currentVal = recRequestSelect.value;
+                recRequestSelect.innerHTML = '<option value="">Select Request...</option>' +
+                    state.requests.map(r => `<option value="${r.request_id}">[Req #${r.request_id}] ${escapeHtml(r.issue_type)}: ${escapeHtml(r.flat_no || 'Flat')} (${escapeHtml(r.status)})</option>`).join('');
+                if (currentVal) recRequestSelect.value = currentVal;
+            }
+        }
+
+        // ==============================================================
+        // TABLE RENDERING FUNCTIONS
+        // ==============================================================
+
+        // 1. Render Residents Table
+        function renderResidentsTable(list) {
+            const tbody = document.getElementById('tbodyResidents');
+            if (!tbody) return;
+
+            if (list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-slate-500">No residents registered yet.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = list.map(r => `
+                <tr class="hover:bg-slate-800/40 transition-colors">
+                    <td class="py-2.5 px-3 font-mono text-slate-400">#${r.resident_id}</td>
+                    <td class="py-2.5 px-3 font-medium text-white flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold flex items-center justify-center text-[10px] shrink-0">
+                            ${r.name ? r.name.charAt(0).toUpperCase() : 'R'}
+                        </div>
+                        <span>${escapeHtml(r.name)}</span>
+                    </td>
+                    <td class="py-2.5 px-3">
+                        <span class="inline-block px-2 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700 font-mono text-[11px]">
+                            ${escapeHtml(r.flat_no)}
+                        </span>
+                    </td>
+                    <td class="py-2.5 px-3 font-mono text-slate-400">${escapeHtml(r.phone)}</td>
+                    <td class="py-2.5 px-3 text-slate-400 truncate max-w-[140px]">${escapeHtml(r.email)}</td>
+                    <td class="py-2.5 px-3 text-right whitespace-nowrap">
+                        <button onclick="openEditResidentModal(${r.resident_id})" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded border border-slate-700 mr-1.5 transition-all" title="Edit Resident">
+                            <svg class="w-3.5 h-3.5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                        </button>
+                        <button onclick="handleDeleteResident(${r.resident_id})" class="px-2 py-1 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded border border-rose-500/30 transition-all" title="Delete Resident">
+                            <svg class="w-3.5 h-3.5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 2. Render Staff Table
+        function renderStaffTable(list) {
+            const tbody = document.getElementById('tbodyStaff');
+            if (!tbody) return;
+
+            if (list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-slate-500">No staff members onboarded yet.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = list.map(s => {
+                let badgeClass = "bg-slate-800 text-slate-300 border-slate-700";
+                if (s.specialization === 'Plumbing') badgeClass = "bg-blue-500/10 text-blue-400 border-blue-500/30";
+                else if (s.specialization === 'Electrical') badgeClass = "bg-amber-500/10 text-amber-400 border-amber-500/30";
+                else if (s.specialization === 'Cleaning') badgeClass = "bg-teal-500/10 text-teal-400 border-teal-500/30";
+                else if (s.specialization === 'HVAC') badgeClass = "bg-purple-500/10 text-purple-400 border-purple-500/30";
+
+                return `
+                    <tr class="hover:bg-slate-800/40 transition-colors">
+                        <td class="py-2.5 px-3 font-mono text-slate-400">#${s.staff_id}</td>
+                        <td class="py-2.5 px-3 font-medium text-white flex items-center gap-2">
+                            <div class="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 font-bold flex items-center justify-center text-[10px] shrink-0">
+                                ${s.name ? s.name.charAt(0).toUpperCase() : 'S'}
+                            </div>
+                            <span>${escapeHtml(s.name)}</span>
+                        </td>
+                        <td class="py-2.5 px-3">
+                            <span class="inline-block px-2 py-0.5 rounded border text-[11px] font-semibold ${badgeClass}">
+                                ${escapeHtml(s.specialization)}
+                            </span>
+                        </td>
+                        <td class="py-2.5 px-3 font-mono text-slate-400">${escapeHtml(s.phone)}</td>
+                        <td class="py-2.5 px-3 text-slate-400 truncate max-w-[140px]">${escapeHtml(s.email)}</td>
+                        <td class="py-2.5 px-3 text-right whitespace-nowrap">
+                            <button onclick="openEditStaffModal(${s.staff_id})" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded border border-slate-700 mr-1.5 transition-all" title="Edit Staff">
+                                <svg class="w-3.5 h-3.5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                            </button>
+                            <button onclick="handleDeleteStaff(${s.staff_id})" class="px-2 py-1 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded border border-rose-500/30 transition-all" title="Delete Staff">
+                                <svg class="w-3.5 h-3.5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // 3. Render Requests Table
+        function renderRequestsTable(list) {
+            const tbody = document.getElementById('tbodyRequests');
+            if (!tbody) return;
+
+            if (list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-slate-500">No maintenance requests recorded.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = list.map(r => {
+                // Status Badge
+                let statusBadge = '';
+                if (r.status === 'Completed') {
+                    statusBadge = '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"><svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>Completed</span>';
+                } else if (r.status === 'In Progress') {
+                    statusBadge = '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/30"><svg class="w-2.5 h-2.5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="4" stroke="currentColor" stroke-dasharray="32" stroke-linecap="round"/></svg>In Progress</span>';
+                } else {
+                    statusBadge = '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30"><span class="w-1.5 h-1.5 rounded-full bg-amber-400 pulse-subtle"></span>Pending</span>';
+                }
+
+                // Issue Type Pill
+                let typePill = '';
+                if (r.issue_type === 'Plumbing') typePill = '<span class="text-blue-400 font-medium">💧 Plumbing</span>';
+                else if (r.issue_type === 'Electrical') typePill = '<span class="text-amber-400 font-medium">⚡ Electrical</span>';
+                else if (r.issue_type === 'Cleaning') typePill = '<span class="text-teal-400 font-medium">✨ Cleaning</span>';
+                else typePill = '<span class="text-purple-400 font-medium">🔧 Other</span>';
+
+                return `
+                    <tr class="hover:bg-slate-800/40 transition-colors">
+                        <td class="py-2.5 px-3 font-mono text-slate-400 font-bold">#${r.request_id}</td>
+                        <td class="py-2.5 px-3">
+                            <div class="font-medium text-white">${escapeHtml(r.resident_name || 'Resident #' + r.resident_id)}</div>
+                            <div class="text-[11px] font-mono text-slate-400">${escapeHtml(r.flat_no || 'N/A')}</div>
+                        </td>
+                        <td class="py-2.5 px-3 text-slate-300">
+                            ${r.staff_name && r.staff_name !== 'Unassigned' 
+                                ? `<span class="text-slate-200 font-medium">${escapeHtml(r.staff_name)}</span> <span class="text-[10px] text-slate-500">(${escapeHtml(r.specialization || '')})</span>`
+                                : '<span class="text-slate-500 italic">Unassigned</span>'}
+                        </td>
+                        <td class="py-2.5 px-3">${typePill}</td>
+                        <td class="py-2.5 px-3 text-slate-300 max-w-[200px] truncate" title="${escapeHtml(r.description)}">
+                            ${escapeHtml(r.description)}
+                        </td>
+                        <td class="py-2.5 px-3 font-mono text-[11px] text-slate-400 whitespace-nowrap">${r.request_date ? r.request_date.slice(0, 16) : 'N/A'}</td>
+                        <td class="py-2.5 px-3 whitespace-nowrap">${statusBadge}</td>
+                        <td class="py-2.5 px-3 text-right whitespace-nowrap">
+                            <button onclick="openEditRequestModal(${r.request_id})" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded border border-slate-700 mr-1.5 transition-all" title="Edit Request">
+                                <svg class="w-3.5 h-3.5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                            </button>
+                            <button onclick="handleDeleteRequest(${r.request_id})" class="px-2 py-1 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded border border-rose-500/30 transition-all" title="Delete Request">
+                                <svg class="w-3.5 h-3.5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // 4. Render Records Table
+        function renderRecordsTable(list) {
+            const tbody = document.getElementById('tbodyRecords');
+            if (!tbody) return;
+
+            if (list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-6 text-slate-500">No repair records logged yet.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = list.map(rec => `
+                <tr class="hover:bg-slate-800/40 transition-colors">
+                    <td class="py-2.5 px-3 font-mono text-slate-400 font-bold">#${rec.record_id}</td>
+                    <td class="py-2.5 px-3">
+                        <span class="inline-block px-2 py-0.5 rounded bg-indigo-950/60 text-indigo-300 border border-indigo-800/60 font-mono text-[11px]">
+                            Req #${rec.request_id}
+                        </span>
+                        <div class="text-[11px] text-slate-400 mt-0.5">${escapeHtml(rec.issue_type || '')} (${escapeHtml(rec.flat_no || 'Unit')})</div>
+                    </td>
+                    <td class="py-2.5 px-3 text-slate-200 max-w-[220px] truncate" title="${escapeHtml(rec.work_description)}">
+                        ${escapeHtml(rec.work_description)}
+                    </td>
+                    <td class="py-2.5 px-3 font-mono text-[11px] text-slate-400 whitespace-nowrap">${rec.completion_date || 'N/A'}</td>
+                    <td class="py-2.5 px-3 font-mono text-emerald-400 font-bold whitespace-nowrap">
+                        $${parseFloat(rec.repair_cost || 0).toFixed(2)}
+                    </td>
+                    <td class="py-2.5 px-3 text-slate-400 max-w-[150px] truncate" title="${escapeHtml(rec.remarks || '')}">
+                        ${escapeHtml(rec.remarks || '-')}
+                    </td>
+                    <td class="py-2.5 px-3 text-right whitespace-nowrap">
+                        <button onclick="openEditRecordModal(${rec.record_id})" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded border border-slate-700 mr-1.5 transition-all" title="Edit Record">
+                            <svg class="w-3.5 h-3.5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                        </button>
+                        <button onclick="handleDeleteRecord(${rec.record_id})" class="px-2 py-1 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded border border-rose-500/30 transition-all" title="Delete Record">
+                            <svg class="w-3.5 h-3.5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // ==============================================================
+        // FORM SUBMISSION HANDLERS (POST)
+        // ==============================================================
+
+        // 1. POST Resident
+        async function handleCreateResident(e) {
+            e.preventDefault();
+            const payload = {
+                name: document.getElementById('res_name').value.trim(),
+                flat_no: document.getElementById('res_flat_no').value.trim(),
+                phone: document.getElementById('res_phone').value.trim(),
+                email: document.getElementById('res_email').value.trim()
+            };
+
+            try {
+                const res = await fetch('/residents', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to register resident');
+
+                showToast(`Resident ${payload.name} registered successfully!`);
+                document.getElementById('formAddResident').reset();
+                await fetchAllData();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        // 2. POST Staff
+        async function handleCreateStaff(e) {
+            e.preventDefault();
+            const payload = {
+                name: document.getElementById('staff_name').value.trim(),
+                specialization: document.getElementById('staff_specialization').value,
+                phone: document.getElementById('staff_phone').value.trim(),
+                email: document.getElementById('staff_email').value.trim()
+            };
+
+            try {
+                const res = await fetch('/staff', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to onboard staff member');
+
+                showToast(`Staff member ${payload.name} onboarded!`);
+                document.getElementById('formAddStaff').reset();
+                await fetchAllData();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        // 3. POST Request
+        async function handleCreateRequest(e) {
+            e.preventDefault();
+            const payload = {
+                resident_id: document.getElementById('req_resident_id').value,
+                staff_id: document.getElementById('req_staff_id').value || null,
+                issue_type: document.getElementById('req_issue_type').value,
+                request_date: document.getElementById('req_request_date').value,
+                status: document.getElementById('req_status').value,
+                description: document.getElementById('req_description').value.trim()
+            };
+
+            if (!payload.resident_id) {
+                showToast('Please select a resident.', 'error');
+                return;
+            }
+
+            try {
+                const res = await fetch('/requests', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to file maintenance request');
+
+                showToast('Maintenance request filed successfully!');
+                document.getElementById('formAddRequest').reset();
+                initDefaults();
+                await fetchAllData();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        // 4. POST Record
+        async function handleCreateRecord(e) {
+            e.preventDefault();
+            const payload = {
+                request_id: document.getElementById('rec_request_id').value,
+                completion_date: document.getElementById('rec_completion_date').value,
+                repair_cost: parseFloat(document.getElementById('rec_repair_cost').value) || 0.00,
+                work_description: document.getElementById('rec_work_description').value.trim(),
+                remarks: document.getElementById('rec_remarks').value.trim()
+            };
+
+            if (!payload.request_id) {
+                showToast('Please select a linked maintenance request.', 'error');
+                return;
+            }
+
+            try {
+                const res = await fetch('/records', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to log repair record');
+
+                showToast('Repair record logged and costs updated!');
+                document.getElementById('formAddRecord').reset();
+                initDefaults();
+                await fetchAllData();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        // ==============================================================
+        // EDIT MODAL & PUT ACTIONS
+        // ==============================================================
+        function closeEditModal() {
+            document.getElementById('editModal').classList.add('hidden');
+            currentEditingEntity = null;
+            currentEditingId = null;
+        }
+
+        // Open Edit Resident
+        function openEditResidentModal(id) {
+            const item = state.residents.find(r => r.resident_id === id);
+            if (!item) return;
+
+            currentEditingEntity = 'residents';
+            currentEditingId = id;
+
+            document.getElementById('editModalTitle').innerHTML = `<span>Edit Resident (#${id})</span>`;
+            document.getElementById('editModalFields').innerHTML = `
+                <div>
+                    <label class="block text-slate-400 mb-1 font-medium">Resident Name *</label>
+                    <input type="text" id="edit_res_name" value="${escapeHtml(item.name)}" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-medium">Flat No *</label>
+                    <input type="text" id="edit_res_flat_no" value="${escapeHtml(item.flat_no)}" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-medium">Phone Number *</label>
+                    <input type="tel" id="edit_res_phone" value="${escapeHtml(item.phone)}" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-medium">Email Address *</label>
+                    <input type="email" id="edit_res_email" value="${escapeHtml(item.email)}" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                </div>
+            `;
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        // Open Edit Staff
+        function openEditStaffModal(id) {
+            const item = state.staff.find(s => s.staff_id === id);
+            if (!item) return;
+
+            currentEditingEntity = 'staff';
+            currentEditingId = id;
+
+            const specs = ["Plumbing", "Electrical", "Cleaning", "HVAC", "Carpentry", "General Maintenance"];
+            const specOptions = specs.map(sp => `<option value="${sp}" ${item.specialization === sp ? 'selected' : ''}>${sp}</option>`).join('');
+
+            document.getElementById('editModalTitle').innerHTML = `<span>Edit Staff Member (#${id})</span>`;
+            document.getElementById('editModalFields').innerHTML = `
+                <div>
+                    <label class="block text-slate-400 mb-1 font-medium">Staff Name *</label>
+                    <input type="text" id="edit_staff_name" value="${escapeHtml(item.name)}" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-medium">Specialization *</label>
+                    <select id="edit_staff_specialization" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                        ${specOptions}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-medium">Phone Number *</label>
+                    <input type="tel" id="edit_staff_phone" value="${escapeHtml(item.phone)}" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-medium">Email Address *</label>
+                    <input type="email" id="edit_staff_email" value="${escapeHtml(item.email)}" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                </div>
+            `;
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        // Open Edit Request
+        function openEditRequestModal(id) {
+            const item = state.requests.find(r => r.request_id === id);
+            if (!item) return;
+
+            currentEditingEntity = 'requests';
+            currentEditingId = id;
+
+            const resOptions = state.residents.map(res => 
+                `<option value="${res.resident_id}" ${res.resident_id === item.resident_id ? 'selected' : ''}>[ID #${res.resident_id}] ${escapeHtml(res.name)} (${escapeHtml(res.flat_no)})</option>`
+            ).join('');
+
+            const staffOptions = '<option value="">Unassigned</option>' + state.staff.map(st => 
+                `<option value="${st.staff_id}" ${st.staff_id === item.staff_id ? 'selected' : ''}>[ID #${st.staff_id}] ${escapeHtml(st.name)} - ${escapeHtml(st.specialization)}</option>`
+            ).join('');
+
+            const types = ["Plumbing", "Electrical", "Cleaning", "Other"];
+            const typeOptions = types.map(t => `<option value="${t}" ${item.issue_type === t ? 'selected' : ''}>${t}</option>`).join('');
+
+            const statuses = ["Pending", "In Progress", "Completed"];
+            const statusOptions = statuses.map(s => `<option value="${s}" ${item.status === s ? 'selected' : ''}>${s}</option>`).join('');
+
+            const formattedDate = item.request_date ? item.request_date.replace(' ', 'T').slice(0, 16) : '';
+
+            document.getElementById('editModalTitle').innerHTML = `<span>Edit Maintenance Request (#${id})</span>`;
+            document.getElementById('editModalFields').innerHTML = `
+                <div>
+                    <label class="block text-slate-400 mb-1 font-medium">Resident (Foreign Key) *</label>
+                    <select id="edit_req_resident_id" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                        ${resOptions}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-medium">Assign Staff (Foreign Key)</label>
+                    <select id="edit_req_staff_id" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                        ${staffOptions}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-medium">Issue Type (Restricted) *</label>
+                    <select id="edit_req_issue_type" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                        ${typeOptions}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-medium">Status *</label>
+                    <select id="edit_req_status" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                        ${statusOptions}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-medium">Request Date &amp; Time *</label>
+                    <input type="datetime-local" id="edit_req_date" value="${formattedDate}" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-medium">Description *</label>
+                    <textarea id="edit_req_description" required rows="2" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-indigo-500">${escapeHtml(item.description)}</textarea>
+                </div>
+            `;
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        // Open Edit Record
+        function openEditRecordModal(id) {
+            const item = state.records.find(rec => rec.record_id === id);
+            if (!item) return;
+
+            currentEditingEntity = 'records';
+            currentEditingId = id;
+
+            const reqOptions = state.requests.map(r => 
+                `<option value="${r.request_id}" ${r.request_id === item.request_id ? 'selected' : ''}>[Req #${r.request_id}] ${escapeHtml(r.issue_type)}: ${escapeHtml(r.flat_no || 'Unit')}</option>`
+            ).join('');
+
+            document.getElementById('editModalTitle').innerHTML = `<span>Edit Repair Record (#${id})</span>`;
+            document.getElementById('editModalFields').innerHTML = `
+                <div>
+                    <label class="block text-slate-400 mb-1 font-medium">Linked Request (Foreign Key) *</label>
+                    <select id="edit_rec_request_id" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                        ${reqOptions}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-medium">Completion Date *</label>
+                    <input type="date" id="edit_rec_completion_date" value="${item.completion_date || ''}" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-medium">Repair Cost ($) *</label>
+                    <input type="number" step="0.01" min="0" id="edit_rec_repair_cost" value="${parseFloat(item.repair_cost || 0).toFixed(2)}" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-indigo-500 font-mono">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-medium">Work Description *</label>
+                    <textarea id="edit_rec_work_description" required rows="2" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-indigo-500">${escapeHtml(item.work_description)}</textarea>
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-medium">Remarks</label>
+                    <textarea id="edit_rec_remarks" rows="2" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-indigo-500">${escapeHtml(item.remarks || '')}</textarea>
+                </div>
+            `;
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        // Handle Generic Edit Form Submission (PUT)
+        async function handleEditSubmit(e) {
+            e.preventDefault();
+            if (!currentEditingEntity || !currentEditingId) return;
+
+            let endpoint = `/${currentEditingEntity}/${currentEditingId}`;
+            let payload = {};
+
+            if (currentEditingEntity === 'residents') {
+                payload = {
+                    name: document.getElementById('edit_res_name').value.trim(),
+                    flat_no: document.getElementById('edit_res_flat_no').value.trim(),
+                    phone: document.getElementById('edit_res_phone').value.trim(),
+                    email: document.getElementById('edit_res_email').value.trim()
+                };
+            } else if (currentEditingEntity === 'staff') {
+                payload = {
+                    name: document.getElementById('edit_staff_name').value.trim(),
+                    specialization: document.getElementById('edit_staff_specialization').value,
+                    phone: document.getElementById('edit_staff_phone').value.trim(),
+                    email: document.getElementById('edit_staff_email').value.trim()
+                };
+            } else if (currentEditingEntity === 'requests') {
+                payload = {
+                    resident_id: document.getElementById('edit_req_resident_id').value,
+                    staff_id: document.getElementById('edit_req_staff_id').value || null,
+                    issue_type: document.getElementById('edit_req_issue_type').value,
+                    status: document.getElementById('edit_req_status').value,
+                    request_date: document.getElementById('edit_req_date').value,
+                    description: document.getElementById('edit_req_description').value.trim()
+                };
+            } else if (currentEditingEntity === 'records') {
+                payload = {
+                    request_id: document.getElementById('edit_rec_request_id').value,
+                    completion_date: document.getElementById('edit_rec_completion_date').value,
+                    repair_cost: parseFloat(document.getElementById('edit_rec_repair_cost').value) || 0.00,
+                    work_description: document.getElementById('edit_rec_work_description').value.trim(),
+                    remarks: document.getElementById('edit_rec_remarks').value.trim()
+                };
+            }
+
+            try {
+                const res = await fetch(endpoint, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to update entry');
+
+                showToast(`Entry #${currentEditingId} in ${currentEditingEntity} updated successfully.`);
+                closeEditModal();
+                await fetchAllData();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        // ==============================================================
+        // DELETE ACTION HANDLERS (DELETE)
+        // ==============================================================
+        async function handleDeleteResident(id) {
+            if (!confirm(`Are you sure you want to delete Resident #${id}? This will remove associated maintenance requests.`)) return;
+
+            try {
+                const res = await fetch(`/residents/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to delete resident');
+
+                showToast(`Resident #${id} removed successfully.`);
+                await fetchAllData();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        async function handleDeleteStaff(id) {
+            if (!confirm(`Are you sure you want to delete Staff Member #${id}?`)) return;
+
+            try {
+                const res = await fetch(`/staff/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to delete staff member');
+
+                showToast(`Staff Member #${id} removed.`);
+                await fetchAllData();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        async function handleDeleteRequest(id) {
+            if (!confirm(`Are you sure you want to delete Maintenance Request #${id}?`)) return;
+
+            try {
+                const res = await fetch(`/requests/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to delete request');
+
+                showToast(`Maintenance Request #${id} removed.`);
+                await fetchAllData();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        async function handleDeleteRecord(id) {
+            if (!confirm(`Are you sure you want to delete Repair Record #${id}?`)) return;
+
+            try {
+                const res = await fetch(`/records/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Failed to delete record');
+
+                showToast(`Repair Record #${id} deleted.`);
+                await fetchAllData();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        // ==============================================================
+        // UTILITIES & VIEW SWITCHERS
+        // ==============================================================
+        function toggleForm(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.classList.toggle('hidden');
+        }
+
+        function switchView(view) {
+            const sections = {
+                residents: document.getElementById('sectionResidents'),
+                staff: document.getElementById('sectionStaff'),
+                requests: document.getElementById('sectionRequests'),
+                records: document.getElementById('sectionRecords')
+            };
+
+            const grid = document.getElementById('workspaceGrid');
+
+            // Reset buttons
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.className = 'view-btn px-3 py-1.5 rounded-lg transition-all text-slate-400 hover:text-slate-200 flex items-center gap-1.5';
+            });
+
+            const activeBtn = {
+                split: document.getElementById('btnViewSplit'),
+                residents: document.getElementById('btnViewResidents'),
+                staff: document.getElementById('btnViewStaff'),
+                requests: document.getElementById('btnViewRequests'),
+                records: document.getElementById('btnViewRecords')
+            }[view];
+
+            if (activeBtn) {
+                activeBtn.className = 'view-btn px-3 py-1.5 rounded-lg transition-all text-white bg-indigo-600 shadow-sm flex items-center gap-1.5';
+            }
+
+            if (view === 'split') {
+                grid.className = 'grid grid-cols-1 xl:grid-cols-2 gap-6';
+                Object.values(sections).forEach(s => s && s.classList.remove('hidden'));
+            } else {
+                grid.className = 'grid grid-cols-1 gap-6';
+                Object.keys(sections).forEach(key => {
+                    if (sections[key]) {
+                        if (key === view) sections[key].classList.remove('hidden');
+                        else sections[key].classList.add('hidden');
+                    }
+                });
+            }
+        }
+
+        function applyGlobalSearch() {
+            const term = (document.getElementById('globalSearch').value || '').toLowerCase().trim();
+            if (!term) {
+                renderAll();
+                return;
+            }
+
+            const filteredResidents = state.residents.filter(r => 
+                (r.name && r.name.toLowerCase().includes(term)) ||
+                (r.flat_no && r.flat_no.toLowerCase().includes(term)) ||
+                (r.phone && r.phone.toLowerCase().includes(term)) ||
+                (r.email && r.email.toLowerCase().includes(term))
+            );
+            renderResidentsTable(filteredResidents);
+
+            const filteredStaff = state.staff.filter(s => 
+                (s.name && s.name.toLowerCase().includes(term)) ||
+                (s.specialization && s.specialization.toLowerCase().includes(term)) ||
+                (s.phone && s.phone.toLowerCase().includes(term))
+            );
+            renderStaffTable(filteredStaff);
+
+            const filteredRequests = state.requests.filter(r => 
+                (r.description && r.description.toLowerCase().includes(term)) ||
+                (r.issue_type && r.issue_type.toLowerCase().includes(term)) ||
+                (r.status && r.status.toLowerCase().includes(term)) ||
+                (r.resident_name && r.resident_name.toLowerCase().includes(term)) ||
+                (r.flat_no && r.flat_no.toLowerCase().includes(term))
+            );
+            renderRequestsTable(filteredRequests);
+
+            const filteredRecords = state.records.filter(rec => 
+                (rec.work_description && rec.work_description.toLowerCase().includes(term)) ||
+                (rec.remarks && rec.remarks.toLowerCase().includes(term)) ||
+                (rec.flat_no && rec.flat_no.toLowerCase().includes(term))
+            );
+            renderRecordsTable(filteredRecords);
+        }
+
+        function escapeHtml(str) {
+            if (!str && str !== 0) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+    </script>
+</body>
+</html>

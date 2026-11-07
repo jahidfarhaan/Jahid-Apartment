@@ -1,0 +1,22 @@
+{
+  "name": "jahid-apartment-maintenance",
+  "version": "1.0.0",
+  "description": "Jahid Apartment Maintenance Management - Full-Stack Service Operational System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test_verification.js"
+  },
+  "keywords": [
+    "express",
+    "mysql8",
+    "apartment-maintenance",
+    "crud"
+  ],
+  "author": "Jahid",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2",
+    "mysql8": "^2.17.3"
+  }
+}
